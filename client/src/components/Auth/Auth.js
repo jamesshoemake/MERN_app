@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import {
   Avatar,
   Button,
@@ -7,64 +8,71 @@ import {
   Typography,
   Container,
 } from "@material-ui/core";
-import jwt_decode from "jwt-decode";
-import { useDispatch } from "react-redux";
 
+import jwt_decode from "jwt-decode";
+
+import { useDispatch } from "react-redux";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import LockOutlinedIcon from "@material-ui/icons/LockOpenOutlined";
 import Input from "./Input";
+import { signin, signup } from "../../actions/auth";
 import useStyles from "./styles";
 
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
 export const Auth = () => {
-  // const dispatch = useDispatch();
+  const user = false;
+  const dispatch = useDispatch();
   const classes = useStyles();
+  const [formData, setFormData] = React.useState(initialState);
   const [showPassword, setShowPassword] = React.useState(false);
   const [isSignup, setIsSignup] = React.useState(false);
+  const history = useHistory();
 
   const handleShowPassword = () =>
     setShowPassword((prevShowPassword) => !prevShowPassword);
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const handleChange = () => {};
+    if (isSignup) {
+      dispatch(signup(formData, history));
+    } else {
+      dispatch(signin(formData, history));
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const switchMode = () => {
     setIsSignup((prevIsSignup) => !prevIsSignup);
     setShowPassword(false);
   };
 
-  // const googleSuccess = async (res) => {
-  //   const result = res?.profileObj;
-  //   const token = res?.tokenId;
+  const googleSuccess = async (res) => {
+    const data = jwt_decode(res.credential);
 
-  //   try {
-  //     dispatch({ type: "AUTH", data: { result, token } });
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
+    history.push("/");
+    try {
+      dispatch({ type: "AUTH", data });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-  // const googleFailure = (error) => {
-  //   console.log("Google Sign In unsuccessful", error);
-  // };
+  const googleFailure = (error) => {
+    console.log("Google Sign In unsuccessful", error);
+  };
 
-  // function handleCallbackResponse(response) {
-  //   console.log("Endcoded JWT ID token", response);
-  //   let userObject = jwt_decode(response.credential);
-  //   console.log(userObject);
-  // }
-
-  React.useEffect(() => {
-    /* global google */
-    // google.accounts.id.initialize({
-    //   client_id:
-    //     "400070145085-i5scdl549f7i8soofv4rbdi1i22l4hr0.apps.googleusercontent.com",
-    //   callback: handleCallbackResponse,
-    // });
-    // google.accounts.id.renderButton(document.getElementById("signInDiv"), {
-    //   them: "outline",
-    //   size: "full-width",
-    // });
-  });
+  React.useEffect(() => {});
 
   return (
     <Container component="main" maxWidth="xs">
@@ -122,27 +130,29 @@ export const Auth = () => {
           >
             {isSignup ? "Sign Up" : "Sign in"}
           </Button>
-          {/* <div id="signInDiv"></div> */}
-
-          {/* <GoogleLogin
-            clientId="400070145085-i5scdl549f7i8soofv4rbdi1i22l4hr0.apps.googleusercontent.com"
-            render={(renderProps) => (
-              <Button
-                className={classes.googleButton}
-                color="primary"
-                fullWidth
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-                startIcon={<Icon />}
-                variant="contained"
-              >
-                Google Sign In
-              </Button>
+          <div id="signInDiv">
+            {user ? (
+              <div>Logged In</div>
+            ) : (
+              <GoogleLogin
+                render={(renderProps) => (
+                  <Button
+                    className={classes.googleButton}
+                    color="primary"
+                    fullWidth
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
+                    variant="contained"
+                  >
+                    Google Sign In
+                  </Button>
+                )}
+                onSuccess={googleSuccess}
+                onError={googleFailure}
+              />
             )}
-            onSuccess={googleSuccess}
-            onFailure={googleFailure}
-            cookiePolicy="single_host_origin"
-          /> */}
+          </div>
+
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Button onClick={switchMode}>
