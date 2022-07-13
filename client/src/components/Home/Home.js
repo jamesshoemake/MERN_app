@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Container,
   Grow,
@@ -6,54 +6,54 @@ import {
   Paper,
   AppBar,
   TextField,
-  Button,
-} from "@material-ui/core";
-import { useDispatch } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
-import ChipInput from "material-ui-chip-input";
+  Button
+} from '@material-ui/core'
+import { useDispatch } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
+import ChipInput from 'material-ui-chip-input'
 
-import Pagination from "../Pagination";
-import Posts from "../Posts/Posts";
-import { getPostsBySearch } from "../../actions/posts";
-import Form from "../Form/Form";
+import Pagination from '../Pagination'
+import Posts from '../Posts/Posts'
+import { getPostsBySearch } from '../../actions/posts'
+import Form from '../Form/Form'
 
-import useStyles from "./styles";
+import useStyles from './styles'
 
 function useQuery() {
-  return new URLSearchParams(useLocation().search);
+  return new URLSearchParams(useLocation().search)
 }
 
 export const Home = () => {
-  const [currentId, setCurrentId] = React.useState(null);
-  const [search, setSearch] = React.useState("");
-  const [tags, setTags] = React.useState([]);
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const query = useQuery();
-  const history = useHistory();
-  const page = query.get("page") || 1;
+  const [currentId, setCurrentId] = React.useState(null)
+  const [search, setSearch] = React.useState('')
+  const [tags, setTags] = React.useState([])
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const query = useQuery()
+  const history = useHistory()
+  const page = query.get('page') || 1
   // const searchQuery = query.get("searchQuery");
 
   const handleKeyPress = (e) => {
     if (e.keyCode === 13) {
       // search
-      searchPost();
+      searchPost()
     }
-  };
+  }
   const searchPost = () => {
     if (search.trim() || tags) {
-      dispatch(getPostsBySearch({ search, tags: tags.join(",") }));
+      dispatch(getPostsBySearch({ search, tags: tags.join(',') }))
       history.push(
-        `/posts/search?searchQuery=${search || "none"}&tags=${tags.join(",")}`
-      );
+        `/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`
+      )
     } else {
-      history.push("/");
+      history.push('/')
     }
-  };
-  const handleAdd = (tag) => setTags([...tags, tag]);
+  }
+  const handleAdd = (tag) => setTags([...tags, tag])
 
   const handleDelete = (tagToDelete) =>
-    setTags(tags.filter((tag) => tag !== tagToDelete));
+    setTags(tags.filter((tag) => tag !== tagToDelete))
 
   return (
     <Grow in>
@@ -84,7 +84,7 @@ export const Home = () => {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <ChipInput
-                style={{ margin: "10px 0" }}
+                style={{ margin: '10px 0' }}
                 value={tags}
                 onAdd={handleAdd}
                 onDelete={handleDelete}
@@ -101,14 +101,17 @@ export const Home = () => {
               </Button>
             </AppBar>
             <Form currentId={currentId} setCurrentId={setCurrentId} />
-            <Paper elevation={6}>
-              <Pagination page={page} />
-            </Paper>
+
+            {!search && !tags.length ? (
+              <Paper elevation={6} className={classes.pagination}>
+                <Pagination page={page} />
+              </Paper>
+            ) : null}
           </Grid>
         </Grid>
       </Container>
     </Grow>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

@@ -1,50 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { TextField, Button, Typography, Paper } from "@material-ui/core";
-import FileBase from "react-file-base64";
-import useStyles from "./styles";
-import { createPost, updatePost } from "../../actions/posts";
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { TextField, Button, Typography, Paper } from '@material-ui/core'
+import FileBase from 'react-file-base64'
+import useStyles from './styles'
+import { createPost, updatePost } from '../../actions/posts'
 
 export const Form = ({ currentId, setCurrentId }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
   const post = useSelector((state) =>
-    currentId ? state.posts.find((p) => p._id === currentId) : null
-  );
-  const classes = useStyles();
-  const dispatch = useDispatch();
+    currentId ? state.posts.post.find((p) => p._id === currentId) : null
+  )
+  const classes = useStyles()
+  const dispatch = useDispatch()
 
   const [postData, setPostData] = useState({
-    title: "",
-    message: "",
-    tags: "",
-    selectedFile: "",
-  });
+    title: '',
+    message: '',
+    tags: '',
+    selectedFile: ''
+  })
 
   useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem("profile"));
+    const localUser = JSON.parse(localStorage.getItem('profile'))
 
     if (localUser?.token) {
-      setUser(localUser.result);
+      setUser(localUser.result)
     } else {
-      setUser(localUser);
+      setUser(localUser)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    if (post) setPostData(post);
-  }, [post]);
+    if (post) setPostData(post)
+  }, [post])
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (currentId === null) {
-      dispatch(createPost({ ...postData, name: user?.result?.name }));
+      dispatch(createPost({ ...postData, name: user?.result?.name }))
     } else {
-      dispatch(
-        updatePost(currentId, { ...postData, name: user?.result?.name })
-      );
+      dispatch(updatePost(currentId, { ...postData, name: user?.result?.name }))
     }
-    clear();
-  };
+    clear()
+  }
 
   if (!user?.name) {
     return (
@@ -53,20 +51,20 @@ export const Form = ({ currentId, setCurrentId }) => {
           Please Sign-In to create memories
         </Typography>
       </Paper>
-    );
+    )
   }
   const clear = () => {
-    setCurrentId(null);
+    setCurrentId(null)
     setPostData({
-      title: "",
-      message: "",
-      tags: "",
-      selectedFile: "",
-    });
-  };
+      title: '',
+      message: '',
+      tags: '',
+      selectedFile: ''
+    })
+  }
 
   return (
-    <Paper className={classes.paper}>
+    <Paper className={classes.paper} elevation={6}>
       <form
         autoComplete="off"
         noValidate
@@ -74,7 +72,7 @@ export const Form = ({ currentId, setCurrentId }) => {
         onSubmit={handleSubmit}
       >
         <Typography variant="h6">
-          {currentId ? "Editing" : "Creating"} a memory
+          {currentId ? 'Editing' : 'Creating'} a memory
         </Typography>
         <TextField
           name="title"
@@ -101,7 +99,7 @@ export const Form = ({ currentId, setCurrentId }) => {
           fullWidth
           value={postData.tags}
           onChange={(e) =>
-            setPostData({ ...postData, tags: e.target.value.split(",") })
+            setPostData({ ...postData, tags: e.target.value.split(',') })
           }
         />
         <div className={classes.fileInput}>
@@ -134,7 +132,7 @@ export const Form = ({ currentId, setCurrentId }) => {
         </Button>
       </form>
     </Paper>
-  );
-};
+  )
+}
 
-export default Form;
+export default Form
