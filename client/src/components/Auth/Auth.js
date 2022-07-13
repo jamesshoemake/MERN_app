@@ -12,7 +12,7 @@ import {
 import jwt_decode from "jwt-decode";
 
 import { useDispatch } from "react-redux";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import LockOutlinedIcon from "@material-ui/icons/LockOpenOutlined";
 import Input from "./Input";
 import { signin, signup } from "../../actions/auth";

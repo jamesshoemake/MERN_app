@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { AppBar, Avatar, Button, Toolbar, Typography } from "@material-ui/core";
 import useStyles from "./styles";
+import decode from "jwt-decode";
 
-import memories from "../../images/memories.png";
-import { useDispatch } from "react-redux";
+import memoriesLogo from "../../images/memoriesLogo.png";
+import memoriesText from "../../images/memoriesText.png";
 
 export const Navbar = () => {
+  const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
-  const [user, setUser] = useState(null);
   const classes = useStyles();
 
   const logout = () => {
@@ -20,8 +22,6 @@ export const Navbar = () => {
   };
 
   useEffect(() => {
-    // const token = user?.sub;
-    // JWT
     const localUser = JSON.parse(localStorage.getItem("profile"));
 
     if (localUser?.token) {
@@ -31,25 +31,26 @@ export const Navbar = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    const token = user?.token;
+
+    if (token) {
+      const decodedToken = decode(token);
+      if (decodedToken.exp * 1000 < new Date().getTime()) logout();
+    }
+  });
+
   return (
     <AppBar className={classes.appBar} position="static" color="inherit">
-      <div className={classes.brandContainer}>
-        <Typography
-          component={Link}
-          to="/"
-          className={classes.heading}
-          variant="h2"
-          align="center"
-        >
-          Memories
-        </Typography>
+      <Link to="/" className={classes.brandContainer}>
+        <img src={memoriesText} alt="icon" height="45px" />
         <img
           className={classes.image}
-          src={memories}
+          src={memoriesLogo}
           alt="memories"
-          height="60"
+          height="40"
         />
-      </div>
+      </Link>
       <Toolbar className={classes.toolbar}>
         {user ? (
           <div className={classes.profile}>
